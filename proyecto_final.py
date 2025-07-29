@@ -113,26 +113,64 @@ class NotesApp(QWidget):
         # Guardar el diccionario 'notes' como JSON en un archivo "notes.json"
         pass
 
-    def add_image(self):
-        # TODO [Cristian]:
-        # Abrir un explorador de archivos para seleccionar una imagen
-        # Mostrar la imagen seleccionada en self.image_label usando QPixmap
-        pass
+     def add_image(self):
+        # Cristian: Esta función permite al usuario seleccionar una imagen desde su computador
+        # y luego la muestra en la interfaz.
+
+        file_name, _ = QFileDialog.getOpenFileName(self, "Seleccionar imagen", "", "Imágenes (*.png *.jpg *.jpeg *.bmp)")
+        if file_name:
+            # Carga la imagen con PIL y la guarda en self.current_image para futuros cambios
+            self.current_image = Image.open(file_name)
+            
+            # Convierte la imagen a un formato que Qt pueda mostrar
+            qt_image = ImageQt.ImageQt(self.current_image)
+            pixmap = QPixmap.fromImage(qt_image)
+
+            # Muestra la imagen en el QLabel
+            self.image_label.setPixmap(pixmap)
+            self.image_label.setScaledContents(True)
+
+            # Guarda la ruta por si se necesita
+            self.current_image_path = file_name
+            self.show_message("Imagen cargada", "La imagen se ha cargado correctamente.")
 
     def make_bw(self):
-        # TODO [Cristian]:
-        # Convertir la imagen actual a blanco y negro utilizando PIL
-        # Actualizar la imagen en la interfaz
-        pass
+        # Cristian: Esta función convierte la imagen actual en blanco y negro.
+
+        if hasattr(self, 'current_image'):
+            # Convierte la imagen a blanco y negro (modo 'L') y luego de nuevo a RGB para mostrarla
+            bw_image = self.current_image.convert("L").convert("RGB")
+            self.current_image = bw_image
+
+            # Muestra la imagen procesada en el QLabel
+            qt_image = ImageQt.ImageQt(bw_image)
+            pixmap = QPixmap.fromImage(qt_image)
+            self.image_label.setPixmap(pixmap)
+            self.image_label.setScaledContents(True)
+
+            self.show_message("Éxito", "Imagen convertida a blanco y negro.")
+        else:
+            self.show_message("Error", "Primero debes cargar una imagen.")
 
     def make_mirror(self):
-        # TODO [Cristian]:
-        # Reflejar horizontalmente la imagen utilizando PIL
-        # Actualizar vista previa
-        pass
+        # Cristian: Esta función voltea la imagen de manera horizontal (espejo).
+
+        if hasattr(self, 'current_image'):
+            mirrored_image = ImageOps.mirror(self.current_image)
+            self.current_image = mirrored_image
+
+            # Actualiza el QLabel con la imagen reflejada
+            qt_image = ImageQt.ImageQt(mirrored_image)
+            pixmap = QPixmap.fromImage(qt_image)
+            self.image_label.setPixmap(pixmap)
+            self.image_label.setScaledContents(True)
+
+            self.show_message("Éxito", "Imagen reflejada horizontalmente.")
+        else:
+            self.show_message("Error", "Primero debes cargar una imagen.")
 
     def show_message(self, title, message):
-        # Muestra un mensaje emergente con un título y contenido
+        # Esta función muestra un cuadro de diálogo informativo al usuario
         QMessageBox.information(self, title, message)
 
 # ---------- Inicio del programa ----------
