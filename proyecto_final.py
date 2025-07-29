@@ -8,6 +8,30 @@ import json
 import os
 import sys
 
+qss_string = """
+    QWidget {
+        background-color: #333333; /* Fondo oscuro para toda la ventana */
+        color: #F0F0F0; /* Color de texto claro por defecto */
+    }
+
+    #myLabel { /* Estilo específico para el QLabel con objectName="myLabel" */
+        background-color: #555555;
+        color: #ADD8E6; /* Azul claro */
+        border: 1px solid #777777;
+    }
+
+    QPushButton { /* Estilo para todos los QPushButton */
+        background-color: #5cb85c; /* Verde por defecto para los botones */
+        color: white;
+        padding: 5px;
+        border-radius: 5px;
+        border: none;
+    }
+
+    QPushButton:hover { /* Estilo al pasar el ratón por encima */
+        background-color: #4cae4c;
+    }
+    """
 # ---------- Estructura de datos principal ----------
 # Aquí se guardarán las notas en forma de diccionario. Cada entrada debe tener un título, contenido y opcionalmente etiquetas.
 # Ejemplo: notes["Mi Nota"] = {"contenido": "texto de la nota", "etiquetas": ["importante"]}
@@ -173,9 +197,42 @@ class NotesApp(QWidget):
         # Esta función muestra un cuadro de diálogo informativo al usuario
         QMessageBox.information(self, title, message)
 
+   def custom_message(self, title, message):
+        Custom = QMessageBox(self)
+        Custom.setWindowTitle(title)
+        Custom.setText(message)
+        Custom.setIcon(QMessageBox.Question)
+
+        btn_fusion = QPushButton('Fusion')
+        btn_Windows = QPushButton('Windows')
+        btn_WV = QPushButton('Windows Vista')
+
+        Custom.addButton(btn_fusion, QMessageBox.NoRole)
+        Custom.addButton(btn_Windows, QMessageBox.NoRole)
+        Custom.addButton(btn_WV, QMessageBox.NoRole)
+
+        Custom.exec()
+
+        clicked_button = Custom.clickedButton()
+
+        if clicked_button == btn_fusion:
+            app.setStyle('Fusion')
+        elif clicked_button == btn_Windows:
+            app.setStyle('Windows')
+        elif clicked_button == btn_WV:
+            app.setStyle('WindosVista')
+
 # ---------- Inicio del programa ----------
 if __name__ == "__main__":
-    app = QApplication(sys.argv)  # Crea una aplicación
-    window = NotesApp()  # Crea una ventana con nuestra app
-    window.show()  # Muestra la ventana
-    sys.exit(app.exec_())  # Ejecuta la aplicación hasta que se cierre
+    app = QApplication(sys.argv) # Crea una aplicación
+    Apparance = QMessageBox.information(None,'Apariencia','¿Quieres aplicar la apariencia oscura?',QMessageBox.Yes | QMessageBox.No )
+    if Apparance == QMessageBox.Yes:
+        window = NotesApp()  # Crea una ventana con nuestra app
+        app.setStyleSheet(qss_string)
+        window.show()  # Muestra la ventana
+        sys.exit(app.exec_())  # Ejecuta la aplicación hasta que se cierre
+    else:
+        window = NotesApp()  # Crea una ventana con nuestra app
+        NotesApp.custom_message(None, 'Estilo', '¿Qué estilo quieres?')
+        window.show()  # Muestra la ventana
+        sys.exit(app.exec_())  # Ejecuta la aplicación hasta que se cierre
