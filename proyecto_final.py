@@ -102,16 +102,38 @@ class NotesApp(QWidget):
         pass
 
     def load_notes(self):
-        # TODO [Julián]:
-        # Abrir el archivo "notes.json" si existe
-        # Cargar el contenido dentro del diccionario 'notes'
-        # Llenar la lista visual self.notes_list con los títulos cargados
-        pass
+        # Julián: Esta función intenta abrir el archivo "notes.json"
+        # y cargar el contenido de las notas en el diccionario 'self.notes'
+
+        if os.path.exists("notes.json"):
+            try:
+                with open("notes.json", "r", encoding="utf-8") as file:
+                    self.notes = json.load(file)  # Carga el JSON como diccionario
+
+                # Llena la lista visual con los títulos de las notas
+                self.notes_list.clear()
+                for title in self.notes:
+                    self.notes_list.addItem(title)
+
+                self.show_message("Notas cargadas", "Las notas se cargaron correctamente.")
+            except Exception as e:
+                self.show_message("Error", f"No se pudieron cargar las notas: {e}")
+        else:
+            # Si el archivo no existe, crea un diccionario vacío
+            self.notes = {}
+            self.show_message("Sin notas", "No se encontró un archivo de notas. Se creará uno nuevo al guardar.")
 
     def save_notes_to_file(self):
-        # TODO [Julián]:
-        # Guardar el diccionario 'notes' como JSON en un archivo "notes.json"
-        pass
+        # Julián: Esta función guarda el diccionario 'self.notes' en un archivo JSON
+        # para que las notas se mantengan al cerrar el programa
+
+        try:
+            with open("notes.json", "w", encoding="utf-8") as file:
+                json.dump(self.notes, file, ensure_ascii=False, indent=4)
+
+            self.show_message("Guardado exitoso", "Las notas han sido guardadas correctamente.")
+        except Exception as e:
+            self.show_message("Error", f"No se pudieron guardar las notas: {e}")
 
      def add_image(self):
         # Cristian: Esta función permite al usuario seleccionar una imagen desde su computador
